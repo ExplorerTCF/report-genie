@@ -21,30 +21,39 @@ User Input (plain text)
         │
         ▼
 ┌──────────────────────┐
-│  security_checkpoint │  ← FunctionNode — PII scrub, injection detect, audit
+│ security_checkpoint  │ ← FunctionNode — PII scrub · injection detect · audit log
 └──────────┬───────────┘
-     ok    │    security_violation
-           ▼              ▼
-┌──────────────────┐  ┌──────────────────────────┐
-│   orchestrator   │  │  security_violation_node  │
-│   (LlmAgent)     │  └──────────────────────────┘
-│  ┌────────────┐  │
-│  │data_collect│◄─────── MCP: query_database, read_business_file
-│  └─────┬──────┘  │
-│  ┌─────▼──────┐  │
-│  │report_gen  │◄─────── MCP: generate_chart_data
-│  └────────────┘  │
-└──────────┬───────┘
+           │
+      [ok] │   [security_violation]
+           ├─────────────────────────┐
+           ▼                         ▼
+┌───────────────────┐     ┌─────────────────────────┐
+│   orchestrator    │     │ security_violation_node │
+│   (LlmAgent)      │     └─────────────────────────┘
+│  ┌──────────────┐ │
+│  │data_collector│ ├─────◄ MCP: query_database
+│  │ (AgentTool)  │ │       MCP: read_business_file
+│  └──────┬───────┘ │
+│         │         │
+│  ┌──────▼───────┐ │
+│  │ report_gen.  │ ├─────◄ MCP: generate_chart_data
+│  │ (AgentTool)  │ │
+│  └──────────────┘ │
+└──────────┬────────┘
+           │
            ▼
 ┌─────────────────────┐
-│ parse_orchestrator  │  ← FunctionNode — JSON extraction from ctx.state
+│ parse_orchestrator  │ ← FunctionNode — JSON extraction from ctx.state
 └──────────┬──────────┘
+           │
            ▼
 ┌─────────────────────┐
-│  hitl_approval_node │  ← HITL — RequestInput pause for human review
+│ hitl_approval_node  │ ← HITL — RequestInput pause for human review
 └──────────┬──────────┘
-   approved │  rejected
-     ▼              ▼
+           │
+[approved] │ [rejected]
+  ┌────────┴────────┐
+  ▼                 ▼
 ┌──────────┐  ┌────────────┐
 │send_email│  │ reject_node│
 └──────────┘  └────────────┘
