@@ -1,7 +1,7 @@
 # ReportGenie — Submission Write-Up
 
-**Track:** Agents for Business
-**Project Name:** report-genie
+**Track:** Agents for Business \
+**Project Name:** report-genie \
 **ADK Version:** 2.0
 
 ---
